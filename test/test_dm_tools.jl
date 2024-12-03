@@ -1,6 +1,6 @@
 using Test
 using ITensorEntropyTools
-using ITensorEntropyTools: get_density_matrix_sites, get_density_matrix_bond
+using ITensorEntropyTools: density_matrix_sites, density_matrix_bond
 
 using ITensors: tr, order
 using ITensorMPS: siteinds, random_mps
@@ -20,7 +20,7 @@ seed!(42)
       for L in 1:N
         for start in 1:(N - L + 1)
           region = start:(start + L - 1)
-          ρ = get_density_matrix_sites(p, region)
+          ρ = density_matrix_sites(p, region)
           @test tr(ρ) ≈ 1
           @test order(ρ) == length(region) * 2
         end
@@ -30,12 +30,12 @@ seed!(42)
     @testset "Sites - noncontiguous" begin
       # odd
       region = 1:2:N
-      ρ = get_density_matrix_sites(p, region)
+      ρ = density_matrix_sites(p, region)
       @test tr(ρ) ≈ 1
       @test order(ρ) == length(region) * 2
       # even
       region = 2:2:N
-      ρ = get_density_matrix_sites(p, region)
+      ρ = density_matrix_sites(p, region)
       @test tr(ρ) ≈ 1
       @test order(ρ) == length(region) * 2
     end
@@ -44,7 +44,7 @@ seed!(42)
       for L in 2:(N - 1)
         for start in 2:(N - L) # ignore some end points for now
           region = start:(start + L - 1)
-          ρ = get_density_matrix_bond(p, region[1], region[end])
+          ρ = density_matrix_bond(p, region[1], region[end])
           @test tr(ρ) ≈ 1
           @test order(ρ) == 4
         end
