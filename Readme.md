@@ -26,6 +26,8 @@ Using bond mode
 1.37377464991627
 ```
 
+<img src="images/density_matrices.png"  width="500px" />
+
 There is also support for generalized Renyi entropy, in case you don't want von Neumann all the time
 ```julia
 julia> get_ee_region(p, [2,3,4,5,6]; ee_type=EEType("Renyi"),n=0.1)
