@@ -15,7 +15,7 @@ function density_matrix_sites(ψ_::AbstractMPS, region;)
     return ψ[start] * prime(dag(ψ[start]), s[start])
   end
 
-  ψH = prime(dag(ψ), linkinds(ψ)..., s[region]...)
+  ψH = dag(prime(ψ, linkinds(ψ)..., s[region]...))
   lᵢ₁ = linkinds(ψ, start - 1) #this is n,n+1 link
   ρ = prime(ψ[start], lᵢ₁)
   ρ *= ψH[start]
@@ -26,8 +26,9 @@ function density_matrix_sites(ψ_::AbstractMPS, region;)
   end
 
   lⱼ = linkinds(ψ, stop)
-  ρ *= prime(ψ[stop], lⱼ...)
+  ρ *= prime(ψ[stop], lⱼ)
   ρ *= ψH[stop]
+
   return ρ
 end
 
