@@ -11,7 +11,7 @@ seed!(42)
 @testset "Entropy Checks" begin
   N = 5
 
-  for d in [2,3,4]
+  for d in [2, 3, 4]
     @testset "d=$d" begin
       s = siteinds(d, N)
       p = random_mps(s; linkdims=4)

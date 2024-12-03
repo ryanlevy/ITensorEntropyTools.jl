@@ -5,7 +5,9 @@ using ITensors: norm, dim
 include("singular_value_funcs.jl")
 include("density_matrix_tools.jl")
 
-function ee_bipartite(ψ::AbstractMPS, cut::Int; ee_type=EEType("vN"), kwargs...)::Real
+function ee_bipartite(
+  ψ::AbstractMPS, cut::Int; ee_type=EEType("vN"), verbose=false, kwargs...
+)::Real
   """
   Obtain the bipartite entangelment entropy of a MPS left of the location cut
   """
@@ -22,7 +24,7 @@ function ee_bipartite(ψ::AbstractMPS, cut::Int; ee_type=EEType("vN"), kwargs...
 end
 
 function ee_region(
-  ψ::AbstractMPS, region; ee_type=EEType("vN"), mode="auto", kwargs...
+  ψ::AbstractMPS, region; ee_type=EEType("vN"), mode="auto", verbose=false, kwargs...
 )::Real
   """
     Get the entanglement entropy of a region of sites, using either the "site" basis
@@ -31,7 +33,7 @@ function ee_region(
 
   (length(region) == length(ψ)) && return 0.0
 
-  ρ = density_matrix_region(ψ, region; mode, kwargs...)
+  ρ = density_matrix_region(ψ, region; mode, verbose, kwargs...)
 
   D, U = eigen(ρ; ishermitian=true)
   Sd = Array(diag(D))

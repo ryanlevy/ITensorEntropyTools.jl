@@ -46,7 +46,7 @@ julia> mutual_info_region(p,[2,3],[5,6])
 ```
 And tripartite mutual information
 ```math
-I3(A:B:C) = I(A:B) + I(B:C) - I(A:BC)
+I3(A:B:C) = I(A:B) + I(A:C) - I(A:BC)
 ```
 ```julia
 julia> tripartite_ee_region(p,[2,3],[5,7],[8,9])

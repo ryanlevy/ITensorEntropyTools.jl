@@ -17,7 +17,7 @@ end
 function tripartite_ee_region(ψ::AbstractMPS, region_A, region_B, region_C; kwargs...)::Real
   """
     Get the tripartite mutual information of a region of A,B,C sites
-    I3(A:B:C) = I(A:B) + I(B:C) - I(A:BC)
+    I3(A:B:C) = I(A:B) + I(A:C) - I(A:BC)
 
     See get_ee_region for more options
     """

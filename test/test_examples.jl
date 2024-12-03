@@ -1,11 +1,11 @@
 @eval module $(gensym())
 using ITensorEntropyTools: ITensorEntropyTools
-using Test: @testset
+using Test: @test, @testset
 
 @testset "Test examples" begin
-  example_files = ["basiscs.jl"]
+  example_files = ["basics.jl", "advanced.jl", "rainbow_ghz_w.jl"]
   @testset "Test $example_file" for example_file in example_files
-    include(joinpath(pkgdir(ITensorEntropyTools), "examples", example_file))
+    @test include(joinpath(pkgdir(ITensorEntropyTools), "examples", example_file)) == nothing
   end
 end
 end
