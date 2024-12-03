@@ -16,14 +16,14 @@ Contiguous region found, considering sites and bond versions
 Site density matrix would be size (log2) 3.0
 Bond-based density matrix would be size (log2) 4.0
 Using site mode
-1.3381099313375202
+1.5967236103088644
 
 julia> ee_region(p, [2,3,4,5,6]; verbose=true)
 Contiguous region found, considering sites and bond versions
 Site density matrix would be size (log2) 5.0
 Bond-based density matrix would be size (log2) 4.0
 Using bond mode
-1.37377464991627
+1.6807859305972712
 ```
 
 <img src="images/density_matrices.png"  width="500px" />
@@ -31,7 +31,7 @@ Using bond mode
 There is also support for generalized Renyi entropy, in case you don't want von Neumann all the time
 ```julia
 julia> ee_region(p, [2,3,4,5,6]; ee_type=EEType("Renyi"),n=0.1)
-1.982722528519394
+2.033718897443242
 ```
 
 ### Entropy Functions
@@ -42,7 +42,7 @@ I(A:B) = S_n(A) + S_n(B) - S_n(A\cup B)
 ```
 ```julia
 julia> mutual_info_region(p,[2,3],[5,6])
-0.5235354764420115
+0.4465377568277278
 ```
 And tripartite mutual information
 ```math
@@ -50,7 +50,7 @@ I3(A:B:C) = I(A:B) + I(A:C) - I(A:BC)
 ```
 ```julia
 julia> tripartite_ee_region(p,[2,3],[5,7],[8,9])
-0.05629360845248765
+-0.5300964831614192
 ```
 
 ## Credits

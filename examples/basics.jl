@@ -1,6 +1,9 @@
 using ITensorMPS: siteinds, random_mps
 using ITensorEntropyTools
 
+using Random
+Random.seed!(42)
+
 d = 2
 N = 10
 
