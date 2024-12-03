@@ -8,7 +8,7 @@ macro EEType_str(s)
 end
 
 EEType(s::AbstractString) = EEType{SmallString(s)}()
-EEType(t::SmallString) = SiteType{t}()
+EEType(t::SmallString) = EEType{t}()
 
 # These functions all take a vector/diagonal and return
 # a float based on the transform
