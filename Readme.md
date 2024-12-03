@@ -14,6 +14,7 @@ The function `ee_region` will somewhat automatically determine the best way to d
 julia> ee_region(p, [2,3,4]; verbose=true)
 Contiguous region found, considering sites and bond versions
 Site density matrix would be size (log2) 3.0
+Complement sites would be site (log2) 7.0
 Bond-based density matrix would be size (log2) 4.0
 Using site mode
 1.5967236103088644
@@ -21,6 +22,7 @@ Using site mode
 julia> ee_region(p, [2,3,4,5,6]; verbose=true)
 Contiguous region found, considering sites and bond versions
 Site density matrix would be size (log2) 5.0
+Complement sites would be size (log2) 5.0
 Bond-based density matrix would be size (log2) 4.0
 Using bond mode
 1.6807859305972712
@@ -60,6 +62,6 @@ This library was written by Ryan Levy, with heavy inspiration from prior work wi
 ## TODO
 
 - [ ] Matrix Free density matrix tools
-- [ ] Remove dependence on tags
+- [x] Remove dependence on tags
 - [ ] combine site and link codes? 
 - [ ] Generalized to ITensorNetworks

@@ -3,49 +3,44 @@ using ITensors: prime, dag
 
 function density_matrix_sites(ψ_::AbstractMPS, region;)
   """
-    Obtain a density matrix, with external site indices
-    leaves sites uncontracted
+    Obtain a density matrix, leaving some indices uncontracted
+    Assumes very little about tag structure, only site/linkinds
+    Currently assume ordered and orthogonality center is within region
   """
-  # TODO: This should generalize to a network easily
-  # but currently assuming the sites are ordered 
   region = sort(region)
   start, stop = region[1], region[end]
-  # add check that these are legal values?
+  s = siteinds(ψ_)
   ψ = orthogonalize(ψ_, start)
   if length(region) == 1
-    return ψ[start] * prime(dag(ψ[start]), "Site")
-  end
-  ψH = prime(dag(ψ), "Link")
-  lᵢ₁ = linkind(ψ, start - 1) #this is n,n+1 link
-  ρ = (lᵢ₁ == nothing) ? ψ[start] : prime(ψ[start], lᵢ₁)
-  ρ *= prime(ψH[start], "Site")
-  si = 2
-  for k in (start + 1):(stop - 1)
-    ρ *= ψ[k]
-    if region[si] == k
-      ρ *= prime(ψH[k], "Site")
-      si += 1
-    else
-      ρ *= ψH[k]
-    end
+    return ψ[start] * prime(dag(ψ[start]), s[start])
   end
 
-  lⱼ = linkind(ψ, stop)
-  ρ *= (lⱼ == nothing) ? ψ[stop] : prime(ψ[stop], lⱼ)
-  ρ *= prime(ψH[stop], "Site")
+  ψH = prime(dag(ψ), linkinds(ψ)..., s[region]...)
+  lᵢ₁ = linkinds(ψ, start - 1) #this is n,n+1 link
+  ρ = prime(ψ[start], lᵢ₁)
+  ρ *= ψH[start]
+
+  for k in (start + 1):(stop - 1) # replace this with ITensorNetworks iterator
+    ρ *= ψ[k]
+    ρ *= ψH[k]
+  end
+
+  lⱼ = linkinds(ψ, stop)
+  ρ *= prime(ψ[stop], lⱼ...)
+  ρ *= ψH[stop]
   return ρ
 end
 
 function density_matrix_bond(ψ_::AbstractMPS, start, stop;)
   """
     Obtain a density matrix, with external link indices
-    leaves edge links uncontracted
+    leaves bond links uncontracted
     Requires the region to be contiguous
   """
   # TODO: This should generalize to a network easily
   # but currently assuming the sites are ordered 
   ψ = orthogonalize(ψ_, start)
-  ψH = prime(dag(ψ), "Link")
+  ψH = prime(dag(ψ), linkinds(ψ)...)
   ρ = ψ[start] * ψH[start]
   for k in (start + 1):stop
     ρ *= ψ[k]
@@ -76,16 +71,21 @@ function get_best_mode(ψ::AbstractMPS, region; verbose=false)
   # we can always do dim(s[region]) but I'm worried about overflow
   s = siteinds(ψ)
   log_sitedim = sum([log2(dim(s[i])) for i in region])
-  (verbose) && println("Site density matrix would be size (log2) $log_sitedim")
 
-  # check that one should really give the inverse region, TODO: modify region based on this
+  # check that one should really give the inverse region
+  # since Tr_B[rho_A] = Tr_A[rho_B]
   log_inverse = sum([log2(dim(si)) for si in s if si ∉ s[region]])
 
   log_bonddim = log2(dim(linkinds(ψ, start - 1))) + log2(dim(linkinds(ψ, stop)))
-  (verbose) && println("Bond-based density matrix would be size (log2) $log_bonddim")
-  if (log_inverse < log_sitedim) && (log_inverse < log_bonddim)
-    @warn "The compliment of the requested region ($log_inverse) is smaller than the region and the bond version, you should use that instead"
+
+  if verbose
+    println("Site density matrix would be size (log2) $log_sitedim")
+    println("Complement sites would be size (log2) $log_inverse")
+    println("Bond-based density matrix would be size (log2) $log_bonddim")
   end
+
+  # selection logic
+  ((log_inverse < log_sitedim) && (log_inverse < log_bonddim)) && return "sites_i"
   (log_bonddim < log_sitedim) && return "bond"
 
   return "sites"
@@ -103,9 +103,13 @@ function density_matrix_region(
     mode = get_best_mode(ψ, region; verbose)
   end
 
-  if mode == "sites"
+  if mode == "sites" || mode == "site"
     (verbose) && println("Using site mode")
     ρ = density_matrix_sites(ψ, region)
+  elseif mode == "sites_i"
+    (verbose) && println("Using site mode, with inverted region")
+    region_i = [i for i in 1:length(ψ) if i ∉ region]
+    ρ = density_matrix_sites(ψ, region_i)
   elseif mode == "bond"
     # TODO: make network friendly
     (verbose) && println("Using bond mode")
