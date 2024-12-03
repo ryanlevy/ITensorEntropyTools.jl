@@ -7,7 +7,7 @@ Random.seed!(0x5eed)
 L = 8
 @assert L % 2 == 0
 
-println("\nRainbow Version\n\n")
+println("\nRainbow Version\n")
 s = siteinds("Qubit", L)
 psi = MPS(s, "Up") # |0...0>
 
@@ -35,7 +35,7 @@ psi = apply(ops(s, gates), psi)
 @show round(tripartite_ee_region(psi, [1, 2], [2, 3], [4, 5]) / log(2), digits=2)
 @show round(tripartite_ee_region(psi, [1, 2, 3, 4], [5, 6], [7, 8]) / log(2), digits=2)
 
-println("\nGHZ Version\n\n")
+println("\nGHZ Version\n")
 
 ghz = MPS(s, "Up") # |0...0>
 gates = []
@@ -60,9 +60,9 @@ ghz = apply(ops(s, gates), ghz)
 @show round(tripartite_ee_region(ghz, [1, 2], [2, 3], [4, 5]) / log(2), digits=2)
 @show round(tripartite_ee_region(ghz, [1, 2, 3, 4], [5, 6], [7, 8]) / log(2), digits=2)
 
-println("\nW Version\n\n")
+println("\nW Version\n")
 
-# hardcode 1807.05572 linear time
+# hardcode 1807.05572 log time
 if L != 8
   L = 8
   s = siteinds("Qubit", L)
@@ -87,7 +87,7 @@ for pairs in [(1, 2), (1, 3), (2, 4), (1, 5), (3, 6), (2, 7), (4, 8)]
 end
 Ws = apply(ops(s, gates), Ws)
 
-@show maxlinkdim(ghz)
+@show maxlinkdim(Ws)
 # Rainbow "detection"
 @show [round(ee_bipartite(Ws, i) / log(2); digits=4) for i in 1:(L - 1)]
 @show [round(mutual_info_region(Ws, [1], [i]) / log(2); digits=4) for i in 1:L]

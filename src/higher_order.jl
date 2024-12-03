@@ -22,8 +22,8 @@ function tripartite_ee_region(ψ::AbstractMPS, region_A, region_B, region_C; kwa
     See get_ee_region for more options
     """
   I_AB = mutual_info_region(ψ, region_A, region_B; kwargs...)
-  I_BC = mutual_info_region(ψ, region_B, region_C; kwargs...)
+  I_AC = mutual_info_region(ψ, region_A, region_C; kwargs...)
   region_BC = unique(vcat(region_B, region_C))
   I_ABC = mutual_info_region(ψ, region_A, region_BC; kwargs...)
-  return I_AB + I_BC - I_ABC
+  return I_AB + I_AC - I_ABC
 end
