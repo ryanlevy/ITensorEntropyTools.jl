@@ -17,7 +17,7 @@ function get_ee_bipartite(ψ::AbstractMPS, cut::Int; ee_type=EEType("vN"), kwarg
   if !(S_norm ≈ 1.0)
     @warn "Normalization of the density matrix isn't 1 (actual=$S_norm)! Be careful!"
   end
-  return compute_ee(ee_type, Sd, kwargs...)
+  return compute_ee(ee_type, Sd; kwargs...)
 end
 
 function get_density_matrix_sites(ψ_::AbstractMPS, region;)
@@ -139,5 +139,5 @@ function get_ee_region(
   if !(S_norm ≈ 1.0)
     @warn "Normalization of the density matrix isn't 1 (actual=$S_norm)! Be careful!"
   end
-  return compute_ee(ee_type, Sd, kwargs...)
+  return compute_ee(ee_type, Sd; kwargs...)
 end
