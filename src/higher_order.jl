@@ -1,17 +1,18 @@
-function get_mutual_info_region(ψ::AbstractMPS, region_A, region_B; kwargs...)::Real
+function mutual_info_region(ψ::AbstractMPS, region_A, region_B; kwargs...)::Real
   """
     Get the mutual information of a region of A and B sites
     I(A:B) = Sₙ(A)+Sₙ(B) - Sₙ(A,b)
 
     See get_ee_region for more options
     """
-  S_A = get_ee_region(ψ, region_A; kwargs...)
-  S_B = get_ee_region(ψ, region_B; kwargs...)
-  S_AB = get_ee_region(ψ, vcat(region_A, region_B); kwargs...)
+  S_A = ee_region(ψ, region_A; kwargs...)
+  S_B = ee_region(ψ, region_B; kwargs...)
+  region_AB = unique(vcat(region_A,region_B))
+  S_AB = ee_region(ψ, region_AB; kwargs...)
   return S_A + S_B - S_AB
 end
 
-function get_tripartite_ee_region(
+function tripartite_ee_region(
   ψ::AbstractMPS, region_A, region_B, region_C; kwargs...
 )::Real
   """
@@ -20,8 +21,9 @@ function get_tripartite_ee_region(
 
     See get_ee_region for more options
     """
-  I_AB = get_mutual_info_region(ψ, region_A, region_B; kwargs...)
-  I_AC = get_mutual_info_region(ψ, region_B, region_C; kwargs...)
-  I_ABC = get_mutual_info_region(ψ, region_A, vcat(region_B, region_C); kwargs...)
-  return I_AB + I_AC - I_ABC
+  I_AB = mutual_info_region(ψ, region_A, region_B; kwargs...)
+  I_BC = mutual_info_region(ψ, region_B, region_C; kwargs...)
+  region_BC = unique(vcat(region_B,region_C))
+  I_ABC = mutual_info_region(ψ, region_A, region_BC; kwargs...)
+  return I_AB + I_BC - I_ABC
 end

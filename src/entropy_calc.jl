@@ -4,7 +4,7 @@ using ITensors: svd, diag, prime, dag, eigen
 using ITensors: norm, dim
 include("singular_value_funcs.jl")
 
-function get_ee_bipartite(ψ::AbstractMPS, cut::Int; ee_type=EEType("vN"), kwargs...)::Real
+function ee_bipartite(ψ::AbstractMPS, cut::Int; ee_type=EEType("vN"), kwargs...)::Real
   """
   Obtain the bipartite entangelment entropy of a MPS left of the location cut
   """
@@ -20,7 +20,7 @@ function get_ee_bipartite(ψ::AbstractMPS, cut::Int; ee_type=EEType("vN"), kwarg
   return compute_ee(ee_type, Sd; kwargs...)
 end
 
-function get_density_matrix_sites(ψ_::AbstractMPS, region;)
+function density_matrix_sites(ψ_::AbstractMPS, region;)
   """
     Obtain a density matrix, with external site indices
     leaves sites uncontracted
@@ -55,7 +55,7 @@ function get_density_matrix_sites(ψ_::AbstractMPS, region;)
   return ρ
 end
 
-function get_density_matrix_bond(ψ_::AbstractMPS, start, stop;)
+function density_matrix_bond(ψ_::AbstractMPS, start, stop;)
   """
     Obtain a density matrix, with external link indices
     leaves edge links uncontracted
@@ -110,7 +110,7 @@ function get_best_mode(ψ::AbstractMPS, region; verbose=false)
   return "sites"
 end
 
-function get_ee_region(
+function ee_region(
   ψ::AbstractMPS, region; ee_type=EEType("vN"), mode="auto", verbose=false, kwargs...
 )::Real
   """
@@ -125,12 +125,12 @@ function get_ee_region(
 
   if mode == "sites"
     (verbose) && println("Using site mode")
-    ρ = get_density_matrix_sites(ψ, region)
+    ρ = density_matrix_sites(ψ, region)
   elseif mode == "bond"
     # TODO: make network friendly
     (verbose) && println("Using bond mode")
     @assert maximum(region) - minimum(region) + 1 == length(region)
-    ρ = get_density_matrix_bond(ψ, region[1], region[end])
+    ρ = density_matrix_bond(ψ, region[1], region[end])
   end
 
   D, U = eigen(ρ; ishermitian=true)

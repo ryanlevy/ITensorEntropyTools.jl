@@ -11,13 +11,13 @@ p = random_mps(s; linkdims=4)
 ee_bipartite = [get_ee_bipartite(p, i) for i in 1:N]
 @show ee_bipartite
 
-ee_singles = [get_ee_region(p, [i]; mode="sites") for i in 1:N]
+ee_singles = [ee_region(p, [i]; mode="sites") for i in 1:N]
 @show ee_singles
-ee_singles = [get_ee_region(p, [i]; mode="bond") for i in 1:N]
+ee_singles = [ee_region(p, [i]; mode="bond") for i in 1:N]
 @show ee_singles
-ee_doubles = [get_ee_region(p, [i, i + 1]; mode="sites") for i in 1:(N - 1)]
+ee_doubles = [ee_region(p, [i, i + 1]; mode="sites") for i in 1:(N - 1)]
 @show ee_doubles
-ee_doubles = [get_ee_region(p, [i, i + 1]; mode="bond") for i in 1:(N - 1)]
+ee_doubles = [ee_region(p, [i, i + 1]; mode="bond") for i in 1:(N - 1)]
 @show ee_doubles
 
 nothing
