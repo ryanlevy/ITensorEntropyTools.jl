@@ -3,7 +3,7 @@ using ITensors: tr, inds, mapprime
 function mutual_info_region(ψ::AbstractMPS, region_A, region_B; kwargs...)::Real
   """
     Get the mutual information of a region of A and B sites
-    I(A:B) = Sₙ(A)+Sₙ(B) - Sₙ(A,b)
+    I(A:B) = Sₙ(A) + Sₙ(B) - Sₙ(A,b)
 
     See get_ee_region for more options
     """
