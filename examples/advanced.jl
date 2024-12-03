@@ -14,9 +14,7 @@ mutual_info = mutual_info_region(p, [2, 3], [6, 7]; verbose=false)
 @show mutual_info
 
 # this is Renyi n=2 entropy instead of von Neumann
-mutual_info = mutual_info_region(
-  p, [2, 3], [6, 7]; ee_type=EEType("Renyi"), verbose=false
-)
+mutual_info = mutual_info_region(p, [2, 3], [6, 7]; ee_type=EEType("Renyi"), verbose=false)
 @show mutual_info
 
 # this is Renyi n=0.5 entropy instead of von Neumann

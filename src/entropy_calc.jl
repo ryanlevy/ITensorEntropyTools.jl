@@ -118,6 +118,8 @@ function ee_region(
     or the "link" basis. mode="auto" should select the smallest density matrix to compute
   """
 
+  (length(region) == length(ψ)) && return 0.0
+
   # TODO: add in calculations to redo sites and mode 
   if mode == "auto"
     mode = get_best_mode(ψ, region; verbose)
