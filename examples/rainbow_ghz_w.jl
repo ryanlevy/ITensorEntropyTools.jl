@@ -1,4 +1,5 @@
 using ITensors, ITensorMPS
+using ITensorMPS: MPS # in case Metal.jl is used
 using ITensorEntropyTools
 
 using Random

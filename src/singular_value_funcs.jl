@@ -1,4 +1,5 @@
 using ITensors.SmallStrings: SmallString
+using ITensors: array
 
 # borrowing design from ITensors SiteType
 struct EEType{T} end
@@ -12,6 +13,12 @@ EEType(t::SmallString) = EEType{t}()
 
 # These functions all take a vector/diagonal and return
 # a float based on the transform
+
+function compute_ee(t::EEType, D; kwargs...)
+  # Attempt to convert any stray GPU arrays to CPU
+  # This is annoying but unclear
+  return compute_ee(t, Array(array(D)); kwargs...)
+end
 
 function compute_ee(::EEType"vonNeumann", D::Vector{<:Real}; cutoff=1e-12)
   total = sum(d -> (d > cutoff) ? -d * log(d) : 0.0, D)
