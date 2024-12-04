@@ -14,10 +14,7 @@ EEType(t::SmallString) = EEType{t}()
 # a float based on the transform
 
 function compute_ee(::EEType"vonNeumann", D::Vector{<:Real}; cutoff=1e-12)
-  total = 0.0
-  for d in D
-    total += (d > cutoff) ? -d * log(d) : 0.0
-  end
+  total = sum(d -> (d > cutoff) ? -d * log(d) : 0.0, D)
   return total
 end
 
@@ -28,9 +25,6 @@ end
 function compute_ee(::EEType"Renyi", D::Vector{<:Real}; cutoff=1e-12, n=2)
   (n == 1) && return compute_ee(EEType("VonNeumann"), D, cutoff)
 
-  total = 0.0
-  for d in D
-    total += (d > cutoff) ? d^n : 0.0
-  end
+  total = sum(d -> (d > cutoff) ? d^n : 0.0, D)
   return log(total) / (1 - n)
 end
