@@ -1,6 +1,6 @@
 using Test
 using Glob
-using ITensorEntropyTools
+using ITensorTreeEntropyTools
 
 # https://discourse.julialang.org/t/rdir-search-recursive-for-files-with-a-given-name-pattern/75605/12
 @testset "test directory $root" for (root, dirs, files) in

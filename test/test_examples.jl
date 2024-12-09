@@ -1,5 +1,5 @@
 @eval module $(gensym())
-using ITensorEntropyTools: ITensorEntropyTools
+using ITensorTreeEntropyTools: ITensorTreeEntropyTools
 using Test: @test, @testset
 
 @testset "Test examples" begin

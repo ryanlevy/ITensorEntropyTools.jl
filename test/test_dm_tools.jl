@@ -1,6 +1,6 @@
 using Test
-using ITensorEntropyTools
-using ITensorEntropyTools: density_matrix_sites, density_matrix_bond
+using ITensorTreeEntropyTools
+using ITensorTreeEntropyTools: density_matrix_sites, density_matrix_bond
 
 using ITensors: tr, order
 using ITensorMPS: siteinds, random_mps

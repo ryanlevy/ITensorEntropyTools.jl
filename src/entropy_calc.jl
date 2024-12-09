@@ -1,4 +1,4 @@
-using ITensorMPS: AbstractMPS, orthogonalize, linkinds, siteinds, linkind
+using ITensorNetworks: TreeTensorNetwork, orthogonalize, linkinds, siteinds, linkind
 using ITensors: svd, diag, prime, dag, eigen
 
 using ITensors: norm, dim
@@ -6,14 +6,15 @@ include("singular_value_funcs.jl")
 include("density_matrix_tools.jl")
 
 function ee_bipartite(
-  ψ::AbstractMPS, cut::Int; ee_type=EEType("vN"), verbose=false, kwargs...
+  ψ::TreeTensorNetwork, cut_edge::Pair; ee_type=EEType("vN"), verbose=false, kwargs...
 )::Real
   """
-  Obtain the bipartite entangelment entropy of a MPS left of the location cut
+  Obtain the bipartite entangelment entropy of a tree from edge to edge_next
   """
 
+  cut = cut_edge[1]
   ψ = orthogonalize(ψ, cut)
-  U, S, V = svd(ψ[cut], (linkinds(ψ, cut - 1)..., siteinds(ψ, cut)...))
+  U, S, V = svd(ψ[cut], (linkinds(ψ, cut_edge)..., siteinds(ψ, cut)...))
   Sd = Array(diag(S))
   Sd = Sd .^ 2 # for entropy calc, we need sᵢ^2
   S_norm = sum(Sd)
@@ -24,7 +25,7 @@ function ee_bipartite(
 end
 
 function ee_region(
-  ψ::AbstractMPS, region; ee_type=EEType("vN"), mode="auto", verbose=false, kwargs...
+  ψ::TreeTensorNetwork, region; ee_type=EEType("vN"), mode="auto", verbose=false, kwargs...
 )::Real
   """
     Get the entanglement entropy of a region of sites, using either the "site" basis

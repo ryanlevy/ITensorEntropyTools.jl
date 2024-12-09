@@ -1,4 +1,4 @@
-module ITensorEntropyTools
+module ITensorTreeEntropyTools
 include("entropy_calc.jl")
 include("higher_order.jl")
 

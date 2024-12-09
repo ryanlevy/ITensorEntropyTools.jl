@@ -1,6 +1,6 @@
 using ITensors: tr, inds, mapprime
 
-function mutual_info_region(ψ::AbstractMPS, region_A, region_B; kwargs...)::Real
+function mutual_info_region(ψ::TreeTensorNetwork, region_A, region_B; kwargs...)::Real
   """
     Get the mutual information of a region of A and B sites
     I(A:B) = Sₙ(A) + Sₙ(B) - Sₙ(A,b)
@@ -14,7 +14,9 @@ function mutual_info_region(ψ::AbstractMPS, region_A, region_B; kwargs...)::Rea
   return S_A + S_B - S_AB
 end
 
-function tripartite_ee_region(ψ::AbstractMPS, region_A, region_B, region_C; kwargs...)::Real
+function tripartite_ee_region(
+  ψ::TreeTensorNetwork, region_A, region_B, region_C; kwargs...
+)::Real
   """
     Get the tripartite mutual information of a region of A,B,C sites
     I3(A:B:C) = I(A:B) + I(A:C) - I(A:BC)

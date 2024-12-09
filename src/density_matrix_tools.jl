@@ -1,38 +1,82 @@
-using ITensorMPS: AbstractMPS, orthogonalize, linkinds, siteinds, linkind
+using ITensorNetworks: TreeTensorNetwork, orthogonalize, linkinds, siteinds, linkind
+using ITensorNetworks:
+  a_star,
+  BeliefPropagationCache,
+  environment,
+  update,
+  factor,
+  QuadraticFormNetwork,
+  tensornetwork,
+  partitioned_tensornetwork,
+  operator_vertex,
+  messages,
+  default_message,
+  default_message_update,
+  contract
 using ITensors: prime, dag
 
-function density_matrix_sites(ψ_::AbstractMPS, region;)
+using ITensorNetworks.NamedGraphs:
+  NamedGraph, NamedEdge, NamedGraphs, rename_vertices, src, dst
+using ITensorNetworks.NamedGraphs.GraphsExtensions: rem_vertex
+using ITensorNetworks.NamedGraphs.PartitionedGraphs:
+  PartitionEdge, partitionvertices, partitioned_graph, PartitionVertex
+function density_matrix_sites(
+  ψ_::TreeTensorNetwork, region; (cache!)=nothing, cache_update_kwargs=(;)
+)
   """
     Obtain a density matrix, leaving some indices uncontracted
     Assumes very little about tag structure, only site/linkinds
     Currently assume ordered and orthogonality center is within region
   """
-  region = sort(region)
-  start, stop = region[1], region[end]
-  s = siteinds(ψ_)
-  ψ = orthogonalize(ψ_, start)
+  # region = sort(region)
   if length(region) == 1
-    return ψ[start] * prime(dag(ψ[start]), s[start])
+    start = region[1]
+    ψ = orthogonalize(ψ_, start)
+    return ψ[start] * prime(dag(ψ[start]), siteinds(ψ)[start])
   end
 
-  ψH = dag(prime(ψ, linkinds(ψ)..., s[region]...))
-  lᵢ₁ = linkinds(ψ, start - 1) #this is n,n+1 link
-  ρ = prime(ψ[start], lᵢ₁)
-  ρ *= ψH[start]
+  #ψH = dag(prime(ψ, linkinds(ψ)..., s[region]...))
+  #lᵢ₁ = linkinds(ψ, start - 1) #this is n,n+1 link
+  #ρ = prime(ψ[start], lᵢ₁)
+  #ρ *= ψH[start]
 
-  for k in (start + 1):(stop - 1) # replace this with ITensorNetworks iterator
-    ρ *= ψ[k]
-    ρ *= ψH[k]
+  #for k in (start + 1):(stop - 1) # replace this with ITensorNetworks iterator
+  #  ρ *= ψ[k]
+  #  ρ *= ψH[k]
+  #end
+
+  #lⱼ = linkinds(ψ, stop)
+  #ρ *= prime(ψ[stop], lⱼ)
+  #ρ *= ψH[stop]
+
+  ψIψ_bpc = if isnothing(cache!)
+    update(BeliefPropagationCache(QuadraticFormNetwork(ψ_)); cache_update_kwargs...)
+  else
+    cache![]
   end
+  ψIψ = tensornetwork(ψIψ_bpc)
+  pg = partitioned_tensornetwork(ψIψ_bpc)
 
-  lⱼ = linkinds(ψ, stop)
-  ρ *= prime(ψ[stop], lⱼ)
-  ρ *= ψH[stop]
+  path = PartitionEdge.(a_star(partitioned_graph(ψIψ_bpc), region[1], region[end]))
+  for v in region
+    pg = rem_vertex(pg, operator_vertex(ψIψ, v))
+  end
+  ψIψ_bpc_mod = BeliefPropagationCache(pg, messages(ψIψ_bpc), default_message)
+  ψIψ_bpc_mod = update(
+    ψIψ_bpc_mod, path; message_update=ms -> default_message_update(ms; normalize=false)
+  )
+  incoming_mts = environment(ψIψ_bpc_mod, [PartitionVertex(region[end])])
+  local_state = factor(ψIψ_bpc_mod, PartitionVertex(region[end]))
+  rdm = contract(vcat(incoming_mts, local_state); sequence="automatic")
+  #s = siteinds(ψ)
+  #rdm = permute(rdm, reduce(vcat, [s[v1], s[v2], s[v1]', s[v2]']))
 
-  return ρ
+  #rdm = array((rdm * combiner(inds(rdm; plev=0)...)) * combiner(inds(rdm; plev=1)...))
+  rdm /= tr(rdm)
+  return rdm
 end
 
-function density_matrix_bond(ψ_::AbstractMPS, start, stop;)
+function density_matrix_bond(ψ_::TreeTensorNetwork, start, stop;)
   """
     Obtain a density matrix, with external link indices
     leaves bond links uncontracted
@@ -51,7 +95,7 @@ function density_matrix_bond(ψ_::AbstractMPS, start, stop;)
   return ρ
 end
 
-function get_best_mode(ψ::AbstractMPS, region; verbose=false)
+function get_best_mode(ψ::TreeTensorNetwork, region; verbose=false)
   """
     Determine the best mode given a region and MPS
     if the region is contiguous then determine site vs bond
@@ -93,7 +137,7 @@ function get_best_mode(ψ::AbstractMPS, region; verbose=false)
 end
 
 function density_matrix_region(
-  ψ::AbstractMPS, region; mode="auto", verbose=false, kwargs...
+  ψ::TreeTensorNetwork, region; mode="auto", verbose=false, kwargs...
 )
   """ 
     Obtain a density matrix from a region of a MPS
