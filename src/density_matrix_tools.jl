@@ -71,11 +71,11 @@ function get_best_mode(ψ::AbstractMPS, region; verbose=false)
   # get size of site version
   # we can always do dim(s[region]) but I'm worried about overflow
   s = siteinds(ψ)
-  log_sitedim = sum([log2(dim(s[i])) for i in region])
+  log_sitedim = sum(i -> log2(dim(s[i])), region)
 
   # check that one should really give the inverse region
   # since Tr_B[rho_A] = Tr_A[rho_B]
-  log_inverse = sum([log2(dim(si)) for si in s if si ∉ s[region]])
+  log_inverse = sum(si -> si ∈ s[region] ? 0.0 : log2(dim(si)), s; init=0.0)
 
   log_bonddim = log2(dim(linkinds(ψ, start - 1))) + log2(dim(linkinds(ψ, stop)))
 
