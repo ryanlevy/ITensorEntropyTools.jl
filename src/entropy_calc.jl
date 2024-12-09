@@ -9,12 +9,13 @@ function ee_bipartite(
   ψ::TreeTensorNetwork, cut_edge::Pair; ee_type=EEType("vN"), verbose=false, kwargs...
 )::Real
   """
-  Obtain the bipartite entangelment entropy of a tree from edge to edge_next
+  Obtain the bipartite entangelment entropy of a tree along the cut_edge
   """
 
   cut = cut_edge[1]
   ψ = orthogonalize(ψ, cut)
-  U, S, V = svd(ψ[cut], (linkinds(ψ, cut_edge)..., siteinds(ψ, cut)...))
+  #U, S, V = svd(ψ[cut], (linkinds(ψ, cut_edge)..., siteinds(ψ, cut)...))
+  U, S, V = svd(ψ[cut], linkinds(ψ, cut_edge)...)
   Sd = Array(diag(S))
   Sd = Sd .^ 2 # for entropy calc, we need sᵢ^2
   S_norm = sum(Sd)
