@@ -5,7 +5,9 @@ A set of tools designed to compute entanglement entropy of a tree tensor network
 ## Examples
 Consider some tree tensor network `p`.
 
-The standard way to calculate the entanglement entropy would be a bipartition cut between two regions, which you get from `ee_bipartite(p, i=>j)`, specifying which edge(s) to cut along.
+The standard way to calculate the entanglement entropy would be a bipartition cut between two regions, which you get from `S_A = ee_bipartite(p, i=>j)`, specifying which edge(s) to cut along.
+
+<img src="images/tree_edges.png"  width="500px" />
 
 However, we generally want to obtain a density matrix of some `region` of sites. We can do this by tracing out all the sites or if the region is contiguous tracing out the sites leaving the bond or link dimensions. 
 The function `ee_region` will somewhat automatically determine the best way to do this for you
