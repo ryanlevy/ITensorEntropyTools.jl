@@ -1,11 +1,11 @@
-# ITensorEntropyTools.jl
+# ITensorTreeEntropyTools.jl
 
-A set of tools designed to compute entanglement entropy of a MPS.
+A set of tools designed to compute entanglement entropy of a tree tensor network.
 
 ## Examples
-Consider some MPS `p`.
+Consider some tree tensor network `p`.
 
-The standard way to calculate the entanglement entropy would be a bipartition cut between two regions, which you get from `ee_bipartite(p, cut)`.
+The standard way to calculate the entanglement entropy would be a bipartition cut between two regions, which you get from `ee_bipartite(p, i=>j)`, specifying which edge(s) to cut along.
 
 However, we generally want to obtain a density matrix of some `region` of sites. We can do this by tracing out all the sites or if the region is contiguous tracing out the sites leaving the bond or link dimensions. 
 The function `ee_region` will somewhat automatically determine the best way to do this for you
@@ -64,4 +64,4 @@ This library was written by Ryan Levy, with heavy inspiration from prior work wi
 - [ ] Matrix Free density matrix tools
 - [x] Remove dependence on tags
 - [ ] combine site and link codes? 
-- [ ] Generalized to ITensorNetworks
+- [x] Generalized to ITensorNetworks
