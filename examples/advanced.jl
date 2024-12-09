@@ -1,5 +1,6 @@
 using ITensorMPS: siteinds, random_mps
-using ITensorEntropyTools
+using ITensorTreeEntropyTools
+using ITensorNetworks: ttn
 
 using Random
 Random.seed!(0x5eed)
@@ -9,6 +10,7 @@ N = 10
 
 s = siteinds(d, N)
 p = random_mps(s; linkdims=4)
+p = ttn(p[:])
 
 mutual_info = mutual_info_region(p, [2, 3], [6, 7]; verbose=false)
 @show mutual_info

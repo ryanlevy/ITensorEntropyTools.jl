@@ -4,6 +4,7 @@ using ITensorTreeEntropyTools: density_matrix_sites, density_matrix_bond
 
 using ITensors: tr, order
 using ITensorMPS: siteinds, random_mps
+using ITensorNetworks: ttn
 
 using Random: seed!
 seed!(42)
@@ -14,6 +15,7 @@ seed!(42)
 
   s = siteinds(d, N)
   p = random_mps(s; linkdims=4)
+  p = ttn(p[:])
 
   @testset "Test Legal DM" begin
     @testset "Sites" begin
@@ -59,6 +61,7 @@ end
   s = siteinds("Qubit", N; conserve_qns=true)
   state = [isodd(n) ? "Up" : "Dn" for n in 1:N]
   p = random_mps(s, state; linkdims=4)
+  p = ttn(p[:])
 
   @testset "Test Legal DM" begin
     @testset "Sites" begin

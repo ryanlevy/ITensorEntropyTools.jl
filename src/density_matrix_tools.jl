@@ -12,7 +12,13 @@ using ITensorNetworks:
   messages,
   default_message,
   default_message_update,
-  contract
+  contract,
+  flatten_linkinds,
+  underlying_graph,
+  src,
+  dst,
+  vertices,
+  noncommoninds
 using ITensors: prime, dag
 
 using ITensorNetworks.NamedGraphs:
@@ -20,6 +26,16 @@ using ITensorNetworks.NamedGraphs:
 using ITensorNetworks.NamedGraphs.GraphsExtensions: rem_vertex
 using ITensorNetworks.NamedGraphs.PartitionedGraphs:
   PartitionEdge, partitionvertices, partitioned_graph, PartitionVertex
+
+function is_contiguous_region(ψ::TreeTensorNetwork, region)::Bool
+  """
+    Check if the region has the same number of entries as the a* path
+  """
+  path = a_star(underlying_graph(ψ), region[1], region[end])
+  is_contiguous = length(path) + 1 == length(region)
+  return is_contiguous
+end
+
 function density_matrix_sites(
   ψ_::TreeTensorNetwork, region; (cache!)=nothing, cache_update_kwargs=(;)
 )
@@ -68,10 +84,6 @@ function density_matrix_sites(
   incoming_mts = environment(ψIψ_bpc_mod, [PartitionVertex(region[end])])
   local_state = factor(ψIψ_bpc_mod, PartitionVertex(region[end]))
   rdm = contract(vcat(incoming_mts, local_state); sequence="automatic")
-  #s = siteinds(ψ)
-  #rdm = permute(rdm, reduce(vcat, [s[v1], s[v2], s[v1]', s[v2]']))
-
-  #rdm = array((rdm * combiner(inds(rdm; plev=0)...)) * combiner(inds(rdm; plev=1)...))
   rdm /= tr(rdm)
   return rdm
 end
@@ -82,12 +94,14 @@ function density_matrix_bond(ψ_::TreeTensorNetwork, start, stop;)
     leaves bond links uncontracted
     Requires the region to be contiguous
   """
-  # TODO: This should generalize to a network easily
-  # but currently assuming the sites are ordered 
   ψ = orthogonalize(ψ_, start)
-  ψH = prime(dag(ψ), linkinds(ψ)...)
+  ψH = prime(dag(ψ), flatten_linkinds(ψ))
   ρ = ψ[start] * ψH[start]
-  for k in (start + 1):stop
+  path = a_star(underlying_graph(ψ), start, stop)
+  for e in path
+    # hacking a bit, along the path select
+    # toward next edge to not include start
+    k = dst(e)
     ρ *= ψ[k]
     ρ *= ψH[k]
   end
@@ -103,9 +117,7 @@ function get_best_mode(ψ::TreeTensorNetwork, region; verbose=false)
 
     TODO: use swap method to force form contiguous
   """
-  # is this hacky?
-  start, stop = minimum(region), maximum(region)
-  is_contiguous = stop - start + 1 == length(region)
+  is_contiguous = is_contiguous_region(ψ, region)
   (is_contiguous && verbose) &&
     println("Contiguous region found, considering sites and bond versions")
   (!is_contiguous && verbose) &&
@@ -115,13 +127,15 @@ function get_best_mode(ψ::TreeTensorNetwork, region; verbose=false)
   # get size of site version
   # we can always do dim(s[region]) but I'm worried about overflow
   s = siteinds(ψ)
-  log_sitedim = sum([log2(dim(s[i])) for i in region])
+  vs = vertices(ψ)
+  log_sitedim = sum(i -> log2(dim(s[i])), region)
 
   # check that one should really give the inverse region
   # since Tr_B[rho_A] = Tr_A[rho_B]
-  log_inverse = sum([log2(dim(si)) for si in s if si ∉ s[region]])
+  log_inverse = sum(v -> v ∈ region ? 0.0 : log2(dim(s[v])), vs; init=0.0)
 
-  log_bonddim = log2(dim(linkinds(ψ, start - 1))) + log2(dim(linkinds(ψ, stop)))
+  possible_inds = noncommoninds([inds(ψ[i]) for i in region]..., [s[i] for i in region]...)
+  log_bonddim = sum(log2.(dim.(possible_inds)))
 
   if verbose
     println("Site density matrix would be size (log2) $log_sitedim")
@@ -153,12 +167,11 @@ function density_matrix_region(
     ρ = density_matrix_sites(ψ, region)
   elseif mode == "sites_i"
     (verbose) && println("Using site mode, with inverted region")
-    region_i = [i for i in 1:length(ψ) if i ∉ region]
+    region_i = [i for i in vertices(ψ) if i ∉ region]
     ρ = density_matrix_sites(ψ, region_i)
   elseif mode == "bond"
-    # TODO: make network friendly
     (verbose) && println("Using bond mode")
-    @assert maximum(region) - minimum(region) + 1 == length(region)
+    @assert is_contiguous_region(ψ, region)
     ρ = density_matrix_bond(ψ, region[1], region[end])
   end
 

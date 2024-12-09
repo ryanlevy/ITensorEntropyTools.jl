@@ -1,6 +1,7 @@
 using ITensors, ITensorMPS
 using ITensorMPS: MPS # in case Metal.jl is used
-using ITensorEntropyTools
+using ITensorTreeEntropyTools
+using ITensorNetworks: ttn
 
 using Random
 Random.seed!(0x5eed)
@@ -24,7 +25,8 @@ psi = apply(ops(s, gates), psi)
 @show gates
 
 @show maxlinkdim(psi)
-@show [round(ee_bipartite(psi, i) / log(2); digits=2) for i in 1:(L - 1)]
+psi = ttn(psi[:])
+@show [round(ee_bipartite(psi, i => i + 1) / log(2); digits=2) for i in 1:(L - 1)]
 @show [round(mutual_info_region(psi, [1], [i]) / log(2); digits=2) for i in 1:L]
 
 @show round(
@@ -48,7 +50,8 @@ end
 ghz = apply(ops(s, gates), ghz)
 
 @show maxlinkdim(ghz)
-@show [round(ee_bipartite(ghz, i) / log(2); digits=2) for i in 1:(L - 1)]
+ghz = ttn(ghz[:])
+@show [round(ee_bipartite(ghz, i => i + 1) / log(2); digits=2) for i in 1:(L - 1)]
 @show [round(mutual_info_region(ghz, [1], [i]) / log(2); digits=2) for i in 1:L]
 
 @show round(
@@ -88,7 +91,8 @@ end
 Ws = apply(ops(s, gates), Ws)
 
 @show maxlinkdim(Ws)
-@show [round(ee_bipartite(Ws, i) / log(2); digits=4) for i in 1:(L - 1)]
+Ws = tn(Ws[:])
+@show [round(ee_bipartite(Ws, i => i + 1) / log(2); digits=4) for i in 1:(L - 1)]
 @show [round(mutual_info_region(Ws, [1], [i]) / log(2); digits=4) for i in 1:L]
 @show [round(mutual_info_region(Ws, [1, 2], [i]) / log(2); digits=4) for i in 3:L]
 
