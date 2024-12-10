@@ -30,7 +30,8 @@ function compute_ee(::EEType"vN", args...; kwargs...)
 end
 
 function compute_ee(::EEType"Renyi", D::Vector{<:Real}; cutoff=1e-12, n=2)
-  (n == 1) && return compute_ee(EEType("VonNeumann"), D, cutoff)
+  (n == 1) && return compute_ee(EEType("vonNeumann"), D; cutoff)
+  (n == ∞) && return -log(maximum(D))
 
   total = sum(d -> (d > cutoff) ? d^n : 0.0, D)
   return log(total) / (1 - n)
