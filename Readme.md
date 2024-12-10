@@ -2,6 +2,12 @@
 
 A set of tools designed to compute entanglement entropy of a MPS.
 
+## Installation
+Because the package isn't registered, please install with
+```julia
+julia> using Pkg; Pkg.add(url="https://github.com/ryanlevy/ITensorEntropyTools.jl")
+```
+
 ## Examples
 Consider some MPS `p`.
 
@@ -11,6 +17,8 @@ However, we generally want to obtain a density matrix of some `region` of sites.
 The function `ee_region` will somewhat automatically determine the best way to do this for you
 
 ```julia
+julia> using ITensorEntropyTools
+
 julia> ee_region(p, [2,3,4]; verbose=true)
 Contiguous region found, considering sites and bond versions
 Site density matrix would be size (log2) 3.0
@@ -70,4 +78,4 @@ This library was written by Ryan Levy, with heavy inspiration from prior work wi
 - [ ] Matrix Free density matrix tools
 - [x] Remove dependence on tags
 - [ ] combine site and link codes? 
-- [ ] Generalized to ITensorNetworks
+- [x] Generalized to ITensorNetworks (see network branch)
