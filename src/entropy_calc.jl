@@ -23,6 +23,11 @@ function ee_bipartite(
   return compute_ee(ee_type, Sd; kwargs...)
 end
 
+function ee_bipartite!(ψ::AbstractMPS, cut::Int; kwargs...)::Real
+  orthogonalize!(ψ, cut)
+  return ee_bipartite(ψ, cut; kwargs...)
+end
+
 function ee_region(
   ψ::AbstractMPS, region; ee_type=EEType("vN"), mode="auto", verbose=false, kwargs...
 )::Real
