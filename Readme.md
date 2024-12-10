@@ -36,6 +36,12 @@ julia> ee_region(p, [2,3,4,5,6]; ee_type=EEType("Renyi"),n=0.1)
 2.033718897443242
 ```
 
+> [!WARNING]
+> These methods do not scale well!
+> At worst, you will need to store a chi^2 x chi^2 matrix
+> (or a d^L x d^L matrix) and diagonalize it.
+> This library is presented as a convenient tool for small problems.
+
 ### Entropy Functions
 
 There is support for mutual information between two regions
