@@ -34,6 +34,10 @@ Complement sites would be size (log2) 5.0
 Bond-based density matrix would be size (log2) 4.0
 Using bond mode
 1.6807859305972712
+
+julia> ee_region(p, [1,2,3]; verbose=true)
+Using bipartite calculation for region [1, 2, 3]
+1.1657496391466677
 ```
 
 <img src="images/density_matrices.png"  width="500px" />

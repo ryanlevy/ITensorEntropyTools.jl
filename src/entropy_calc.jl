@@ -9,7 +9,8 @@ function ee_bipartite(
   ψ::AbstractMPS, cut::Int; ee_type=EEType("vN"), verbose=false, kwargs...
 )::Real
   """
-  Obtain the bipartite entangelment entropy of a MPS left of the location cut
+  Obtain the bipartite entangelment entropy of a MPS right of the location cut
+  i.e. two regions [1,...,cut] and [cut+1,...,N]
   """
 
   ψ = orthogonalize(ψ, cut)
@@ -37,6 +38,15 @@ function ee_region(
   """
 
   (length(region) == length(ψ)) && return 0.0
+
+  # check if bipartition
+  if mode == "auto" && (region == collect(1:region[end]))
+    verbose && println("Using bipartite calculation for region $region")
+    return ee_bipartite(ψ, region[end]; ee_type, verbose, kwargs...)
+  elseif mode == "auto" && (region == collect(region[1]:length(ψ)))
+    verbose && println("Using bipartite calculation for region $region")
+    return ee_bipartite(ψ, region[1]; ee_type, verbose, kwargs...)
+  end
 
   ρ = density_matrix_region(ψ, region; mode, verbose, kwargs...)
 
