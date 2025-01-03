@@ -76,6 +76,7 @@ julia> tripartite_ee_region(p,[2,3],[5,7],[8,9])
 ## Credits
 This library was written by Ryan Levy, with heavy inspiration from prior work with Abid Khan ([@abid1214](https://github.com/abid1214)) with helpful conversations with [Bryan K Clark](https://clark.physics.illinois.edu/) and [Edgar Solomonik](https://solomonik.cs.illinois.edu/).
 
+This library has not been rigorously tested so please report any bugs/issues you encounter! PRs and comments are also welcome 
 
 ## TODO
 
