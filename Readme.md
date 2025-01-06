@@ -22,7 +22,7 @@ julia> using ITensorEntropyTools
 julia> ee_region(p, [2,3,4]; verbose=true)
 Contiguous region found, considering sites and bond versions
 Site density matrix would be size (log2) 3.0
-Complement sites would be site (log2) 7.0
+Complement sites would be size (log2) 7.0
 Bond-based density matrix would be size (log2) 4.0
 Using site mode
 1.5967236103088644
