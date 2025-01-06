@@ -64,7 +64,7 @@ I(A:B) = S_n(A) + S_n(B) - S_n(A\cup B)
 julia> mutual_info_region(p,[2,3],[5,6])
 0.4465377568277278
 ```
-And tripartite mutual information
+And tripartite mutual information (multivariate mutual information)
 ```math
 I3(A:B:C) = I(A:B) + I(A:C) - I(A:BC)
 ```

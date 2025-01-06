@@ -23,7 +23,16 @@ mutual_info = mutual_info_region(
 )
 @show mutual_info
 
-trimutual_info = tripartite_ee_region(p, [2, 3], [4, 5], [6, 7]; verbose=true)
+A1, A2, A3 = [2, 3], [4, 5], [6, 7]
+
+trimutual_info = tripartite_ee_region(p, A1, A2, A3; verbose=true)
 @show trimutual_info
+
+# explicit symmetric version of tripartite mutual info
+# S(A:B:C) = S(A)+S(B)+S(C) -S(AB)-S(AC)-S(BC) + S(ABC)
+trimutual_info_sym =
+  ee_region(p, A1) + ee_region(p, A2) + ee_region(p, A3) - ee_region(p, [A1; A2]) -
+  ee_region(p, [A1; A3]) - ee_region(p, [A2; A3]) + ee_region(p, [A1; A2; A3])
+@show trimutual_info_sym
 
 nothing
