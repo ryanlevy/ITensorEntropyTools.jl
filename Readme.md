@@ -69,8 +69,8 @@ And tripartite mutual information
 I3(A:B:C) = I(A:B) + I(A:C) - I(A:BC)
 ```
 ```julia
-julia> tripartite_ee_region(p,[2,3],[5,7],[8,9])
--0.5300964831614192
+julia> tripartite_ee_region(p,[2,3],[4,5],[6,7])
+-0.43954571818905186
 ```
 
 ## Credits
