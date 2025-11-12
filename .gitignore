@@ -45,3 +45,5 @@ tags
 [._]*.un~
 
 .DS_Store
+
+.vscode/

@@ -42,4 +42,15 @@ seed!(42)
       end
     end
   end
+
+  @testset "Complement region equivalence" begin
+    s = siteinds(2, 10)
+    psi = random_mps(s; linkdims=4)
+
+    for i in 1:9
+      ee_left = ee_region(psi, 1:i)
+      ee_right = ee_region(psi, (i + 1):10)
+      @test ee_left ≈ ee_right
+    end
+  end
 end

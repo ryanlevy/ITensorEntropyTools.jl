@@ -45,7 +45,13 @@ function ee_region(
     return ee_bipartite(ψ, region[end]; ee_type, verbose, kwargs...)
   elseif mode == "auto" && (region == collect(region[1]:length(ψ)))
     verbose && println("Using bipartite calculation for region $region")
-    return ee_bipartite(ψ, region[1]; ee_type, verbose, kwargs...)
+    return ee_bipartite(ψ, region[1]-1; ee_type, verbose, kwargs...)
+  end
+
+  # check if complement of the region is connected
+  region_C = setdiff(1:length(ψ), region)
+  if Set(region_C) == Set(minimum(region_C):maximum(region_C))
+    region = region_C
   end
 
   ρ = density_matrix_region(ψ, region; mode, verbose, kwargs...)
